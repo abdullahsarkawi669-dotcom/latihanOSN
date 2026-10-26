@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSN Simulator | Matematika & Fisika</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: {
+                typeset: false
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script src="soal_matematika.js"></script>
+    <script src="soal_fisika.js"></script>
+
+    <style>
+        .bg-animated {
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.6);
+            border-radius: 10px;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(71, 85, 105, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(107, 114, 128, 0.8); }
+        
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-animated bg-gradient-to-br from-blue-100 via-purple-100 to-teal-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 min-h-screen text-gray-800 dark:text-gray-100 transition-colors duration-500">
+    
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <header class="flex justify-between items-center mb-8 glass p-6 rounded-2xl shadow-xl">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                    OSN Simulator
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mt-1">Platform Latihan Interaktif</p>
+            </div>
+            <button onclick="toggleDarkMode()" class="p-3 rounded-full bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-700 transition shadow-sm border border-gray-200 dark:border-gray-700">
+                <svg id="icon-sun" class="w-6 h-6 hidden text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <svg id="icon-moon" class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </header>
+
+        <!-- Selection Screen -->
+        <div id="selection-screen" class="glass p-8 md:p-12 rounded-3xl shadow-2xl mb-6 text-center transform transition-all">
+            <h2 class="text-3xl font-bold mb-8 dark:text-white">Pilih Modul Latihan</h2>
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <button onclick="mulaiKuis('matematika')" class="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 p-1 shadow-lg hover:shadow-blue-500/30 transition-all hover:-translate-y-1 w-full sm:w-64">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl px-8 py-6 h-full flex flex-col items-center justify-center transition-colors group-hover:bg-transparent">
+                        <span class="text-2xl font-bold text-blue-600 dark:text-blue-400 group-hover:text-white transition-colors">Matematika</span>
+                    </div>
+                </button>
+                <button onclick="mulaiKuis('fisika')" class="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 p-1 shadow-lg hover:shadow-purple-500/30 transition-all hover:-translate-y-1 w-full sm:w-64">
+                    <div class="bg-white dark:bg-slate-900 rounded-xl px-8 py-6 h-full flex flex-col items-center justify-center transition-colors group-hover:bg-transparent">
+                        <span class="text-2xl font-bold text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors">Fisika</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden animate-fade-in">
+            <div class="flex flex-col lg:flex-row gap-6">
+                
+                <!-- Panel Navigasi -->
+                <div class="lg:w-1/4">
+                    <div class="glass p-5 rounded-2xl shadow-lg sticky top-6 max-h-[80vh] flex flex-col">
+                        <div class="flex-shrink-0">
+                            <!-- Tombol Kembali ke Menu Awal -->
+                            <button onclick="kembaliKeMenuAwal()" class="w-full flex items-center justify-center gap-2 mb-4 bg-white/40 dark:bg-slate-800/40 hover:bg-red-100 dark:hover:bg-red-900/40 text-gray-700 dark:text-gray-300 hover:text-red-700 dark:hover:text-red-400 font-bold py-2 px-4 rounded-xl transition-all border border-gray-200 dark:border-gray-700 shadow-sm text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                                Menu Utama
+                            </button>
+                            
+                            <h3 id="mapel-title" class="text-lg font-bold mb-3 text-center dark:text-white border-b border-gray-200 dark:border-gray-700 pb-3">Modul</h3>
+                            <div class="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300 text-xs font-bold px-3 py-2 rounded-lg text-center mb-3">Navigasi 100 Soal</div>
+                        </div>
+                        
+                        <div id="nav-panel" class="overflow-y-auto custom-scrollbar flex-grow pr-2 pb-2"></div>
+                    </div>
+                </div>
+
+                <!-- Container Soal -->
+                <div class="lg:w-3/4 flex flex-col">
+                    <div class="glass p-6 md:p-8 rounded-3xl shadow-xl mb-6 relative overflow-hidden flex-grow">
+                        <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+                            <span class="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-1 px-4 rounded-full text-sm font-bold shadow-md">
+                                Soal <span id="current-q-num">1</span> dari <span id="total-q">0</span>
+                            </span>
+                            <span id="level-badge" class="py-1 px-4 rounded-full text-sm font-bold shadow-sm border border-current"></span>
+                        </div>
+
+                        <!-- Status Terkunci (jika pembahasan dibuka) -->
+                        <div id="q-locked-alert" class="hidden mb-6 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-400 p-3 rounded-r-lg text-sm font-bold flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            Jawaban soal ini telah dikunci karena Anda telah melihat pembahasan.
+                        </div>
+
+                        <div id="q-image-container" class="mb-6 hidden flex justify-center">
+                            <img id="q-image" src="" alt="Gambar Soal" onerror="this.style.display='none'" class="max-w-full max-h-64 object-contain rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
+                        </div>
+                        
+                        <div id="q-text" class="text-lg md:text-xl font-medium mb-8 leading-relaxed dark:text-gray-100"></div>
+                        
+                        <div id="q-options" class="flex flex-col gap-3"></div>
+
+                        <!-- Tombol Buka Pembahasan -->
+                        <div id="q-btn-pembahasan-container" class="mt-8 flex justify-center border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <button onclick="bukaPembahasan()" class="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 font-bold py-2 px-6 rounded-xl border border-indigo-200 dark:border-indigo-800 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                Lihat Pembahasan Khusus Soal Ini
+                            </button>
+                        </div>
+
+                        <!-- Kontainer Pembahasan (Muncul jika tombol di atas ditekan) -->
+                        <div id="q-pembahasan-container" class="hidden mt-8 flex flex-col gap-4 animate-fade-in">
+                            <div class="bg-white/50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
+                                <div class="font-bold text-indigo-700 dark:text-indigo-400 mb-3 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Kunci & Pembahasan
+                                </div>
+                                <div id="q-pembahasan-text" class="text-gray-700 dark:text-gray-300 text-base leading-relaxed"></div>
+                            </div>
+                            <div class="bg-amber-50/80 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800/50 p-5 shadow-sm">
+                                <div class="font-bold text-amber-700 dark:text-amber-500 mb-2 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    Trik Cepat
+                                </div>
+                                <div id="q-trik-text" class="text-gray-700 dark:text-gray-300 text-base italic"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Tombol Aksi Bawah -->
+                    <div class="flex justify-between items-center">
+                        <button id="btn-prev" onclick="ubahSoal(-1)" class="glass hover:bg-white dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200 font-bold py-3 px-6 rounded-xl transition shadow-md">Kembali</button>
+                        <button id="btn-next" onclick="ubahSoal(1)" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg shadow-blue-500/30">Selanjutnya</button>
+                        <button id="btn-submit" onclick="selesaiKuis()" class="hidden bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg shadow-green-500/30">Selesai & Evaluasi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluation Screen -->
+        <div id="eval-screen" class="hidden animate-fade-in">
+            <div class="glass p-8 md:p-12 rounded-3xl shadow-2xl mb-8 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+                <h2 class="text-3xl font-bold mb-2 relative z-10 dark:text-white">Hasil Evaluasi</h2>
+                
+                <div class="inline-block relative z-10 mt-6 mb-8">
+                    <div class="w-40 h-40 rounded-full border-8 border-blue-500 flex items-center justify-center shadow-lg bg-white dark:bg-slate-800">
+                        <span class="text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600" id="score-display">100</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4 md:gap-8 text-sm md:text-base font-bold relative z-10">
+                    <div class="glass px-6 py-3 rounded-xl border-green-400 dark:border-green-600">
+                        Benar: <span id="benar-display" class="text-green-600 dark:text-green-400 text-xl">0</span>
+                    </div>
+                    <div class="glass px-6 py-3 rounded-xl border-red-400 dark:border-red-600">
+                        Salah: <span id="salah-display" class="text-red-600 dark:text-red-400 text-xl">0</span>
+                    </div>
+                    <div class="glass px-6 py-3 rounded-xl border-gray-400 dark:border-gray-600">
+                        Kosong: <span id="kosong-display" class="text-gray-500 dark:text-gray-400 text-xl">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold mb-6 dark:text-white px-2">Riwayat Pekerjaan & Pembahasan</h3>
+            <div id="eval-list" class="flex flex-col gap-6 mb-10"></div>
+            
+            <div class="text-center">
+                <button onclick="ulangKuis()" class="glass hover:bg-white dark:hover:bg-slate-800 text-gray-800 dark:text-white font-bold py-4 px-10 rounded-2xl transition shadow-xl text-lg border-2 border-transparent hover:border-blue-500">
+                    Menu Utama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+            document.getElementById('icon-moon').classList.toggle('hidden', isDark);
+        }
+
+        let currentSoalData = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let lockedAnswers = []; // Variabel baru untuk melacak soal yang pembahasannya sudah dibuka
+        
+        const levelConfig = [
+            { id: 1, name: 'Level 1 (Mudah)', start: 0, end: 24, badgeClass: 'text-green-700 bg-green-100 border-green-300 dark:bg-green-900/40 dark:text-green-300 dark:border-green-700' },
+            { id: 2, name: 'Level 2 (Sedang)', start: 25, end: 49, badgeClass: 'text-blue-700 bg-blue-100 border-blue-300 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-700' },
+            { id: 3, name: 'Level 3 (Sulit)', start: 50, end: 74, badgeClass: 'text-amber-700 bg-amber-100 border-amber-300 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-700' },
+            { id: 4, name: 'Level 4 (OSN)', start: 75, end: 99, badgeClass: 'text-red-700 bg-red-100 border-red-300 dark:bg-red-900/40 dark:text-red-300 dark:border-red-700' }
+        ];
+
+        function renderMath() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch((err) => console.log('MathJax Error:', err.message));
+            }
+        }
+
+        function mulaiKuis(mapel) {
+            if (mapel === 'matematika') {
+                currentSoalData = typeof soalMatematika !== 'undefined' ? soalMatematika : [];
+                document.getElementById('mapel-title').innerText = "OSN Matematika";
+            } else {
+                currentSoalData = typeof soalFisika !== 'undefined' ? soalFisika : [];
+                document.getElementById('mapel-title').innerText = "OSN Fisika";
+            }
+            
+            if(currentSoalData.length === 0) {
+                alert("Data soal belum tersedia. Pastikan array pada file js sudah terisi.");
+                return;
+            }
+
+            userAnswers = new Array(currentSoalData.length).fill(null);
+            lockedAnswers = new Array(currentSoalData.length).fill(false); // Reset status kunci
+            currentIndex = 0;
+            document.getElementById('total-q').innerText = currentSoalData.length;
+            
+            document.getElementById('selection-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            buildNavPanel();
+            tampilkanSoal();
+        }
+
+        function kembaliKeMenuAwal() {
+            if(confirm("Apakah Anda yakin ingin keluar? Progres jawaban Anda pada modul ini akan hilang.")) {
+                document.getElementById('quiz-screen').classList.add('hidden');
+                document.getElementById('selection-screen').classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function buildNavPanel() {
+            const nav = document.getElementById('nav-panel');
+            nav.innerHTML = '';
+            
+            levelConfig.forEach(level => {
+                if (currentSoalData.length > level.start) {
+                    const header = document.createElement('div');
+                    header.className = `w-full text-xs font-bold uppercase mt-5 mb-3 px-1 first:mt-0 opacity-80 ${level.badgeClass.split(' ')[0]}`;
+                    header.innerText = level.name;
+                    nav.appendChild(header);
+
+                    const grid = document.createElement('div');
+                    grid.className = 'grid grid-cols-4 md:grid-cols-5 lg:grid-cols-3 xl:grid-cols-4 gap-2 mb-2';
+                    
+                    const endIdx = Math.min(level.end, currentSoalData.length - 1);
+                    for (let i = level.start; i <= endIdx; i++) {
+                        const btn = document.createElement('button');
+                        btn.className = `w-full aspect-square rounded-xl font-bold text-sm transition duration-200 border border-transparent shadow-sm flex items-center justify-center`;
+                        btn.innerText = i + 1;
+                        btn.id = `nav-btn-${i}`;
+                        btn.onclick = () => lompatSoal(i);
+                        grid.appendChild(btn);
+                    }
+                    nav.appendChild(grid);
+                }
+            });
+        }
+
+        function updateNavActive() {
+            for (let i = 0; i < currentSoalData.length; i++) {
+                const btn = document.getElementById(`nav-btn-${i}`);
+                if (!btn) continue;
+
+                btn.className = `w-full aspect-square rounded-xl font-bold text-sm transition duration-200 shadow-sm flex items-center justify-center border `;
+                
+                if (i === currentIndex) {
+                    btn.classList.add('ring-4', 'ring-blue-400/50', 'scale-105', 'z-10', 'relative');
+                }
+
+                if (userAnswers[i] !== null) {
+                    btn.classList.add('bg-gradient-to-br', 'from-blue-500', 'to-indigo-600', 'text-white', 'border-blue-700');
+                    // Jika dikunci berikan indikator visual kecil (optional, misal opacity agak turun sedikit)
+                    if(lockedAnswers[i]) btn.classList.add('opacity-80'); 
+                } else {
+                    btn.classList.add('glass', 'text-gray-600', 'dark:text-gray-300', 'hover:bg-white', 'dark:hover:bg-slate-700');
+                    // Jika kosong tapi sudah dikunci (lihat pembahasan tanpa jawab)
+                    if(lockedAnswers[i]) btn.classList.add('bg-red-50', 'text-red-700', 'dark:bg-red-900/30', 'dark:text-red-400');
+                }
+            }
+        }
+
+        function getLevelInfo(index) {
+            return levelConfig.find(lvl => index >= lvl.start && index <= lvl.end) || levelConfig[0];
+        }
+
+        function lompatSoal(idx) { currentIndex = idx; tampilkanSoal(); }
+        function ubahSoal(step) { currentIndex += step; tampilkanSoal(); }
+
+        function tampilkanSoal() {
+            document.getElementById('current-q-num').innerText = currentIndex + 1;
+            const soal = currentSoalData[currentIndex];
+            const isLocked = lockedAnswers[currentIndex];
+            const abjad = ['A', 'B', 'C', 'D', 'E'];
+            
+            const levelInfo = getLevelInfo(currentIndex);
+            const badgeEl = document.getElementById('level-badge');
+            badgeEl.innerText = levelInfo.name;
+            badgeEl.className = `py-1 px-4 rounded-full text-xs font-bold shadow-sm border ${levelInfo.badgeClass}`;
+
+            const imgContainer = document.getElementById('q-image-container');
+            const imgEl = document.getElementById('q-image');
+            if (soal.gambar && soal.gambar.trim() !== "") {
+                imgEl.style.display = 'block';
+                imgEl.src = soal.gambar;
+                imgContainer.classList.remove('hidden');
+            } else {
+                imgContainer.classList.add('hidden');
+            }
+
+            document.getElementById('q-text').innerHTML = soal.teks;
+            
+            // OPSI JAWABAN
+            const optionsContainer = document.getElementById('q-options');
+            optionsContainer.innerHTML = '';
+            
+            soal.opsi.forEach((opt, idx) => {
+                const isSelected = userAnswers[currentIndex] === idx;
+                const div = document.createElement('div');
+                
+                // Styling Opsi Tergantung Status Locked atau Tidak
+                if (isLocked) {
+                    div.className = `flex items-center p-4 rounded-xl border-2 transition-all duration-200 opacity-80 cursor-not-allowed ${
+                        isSelected 
+                        ? 'border-gray-400 bg-gray-200 dark:bg-gray-700 dark:border-gray-500 shadow-inner' 
+                        : 'border-transparent bg-gray-50 dark:bg-gray-800'
+                    }`;
+                } else {
+                    div.className = `group flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                        isSelected 
+                        ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/30 dark:border-blue-400 shadow-md' 
+                        : 'border-transparent glass hover:border-blue-300 dark:hover:border-blue-600'
+                    }`;
+                    div.onclick = () => pilihJawaban(idx);
+                }
+                
+                div.innerHTML = `
+                    <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full font-bold text-sm mr-4 transition-colors ${
+                        isSelected 
+                        ? (isLocked ? 'bg-gray-500 text-white' : 'bg-blue-500 text-white shadow-lg shadow-blue-500/40') 
+                        : (isLocked ? 'bg-gray-300 dark:bg-slate-600 text-gray-500 dark:text-gray-400' : 'bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-gray-200 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/50')
+                    }">${abjad[idx]}</div>
+                    <div class="flex-grow ${isLocked ? 'text-gray-500 dark:text-gray-400' : 'dark:text-gray-200'}">${opt}</div>
+                `;
+                optionsContainer.appendChild(div);
+            });
+
+            // PEMBAHASAN UI LOGIC
+            const btnPembahasanContainer = document.getElementById('q-btn-pembahasan-container');
+            const pembahasanContainer = document.getElementById('q-pembahasan-container');
+            const lockedAlert = document.getElementById('q-locked-alert');
+
+            if (isLocked) {
+                // Tampilkan Pembahasan, Sembunyikan Tombol, Tampilkan Alert
+                btnPembahasanContainer.classList.add('hidden');
+                lockedAlert.classList.remove('hidden');
+                pembahasanContainer.classList.remove('hidden');
+                
+                // Set konten teks yang dinamis
+                document.getElementById('q-pembahasan-text').innerHTML = `
+                    <div class="mb-3"><span class="font-bold text-green-600">Kunci: ${abjad[soal.jawaban]}</span>. ${soal.opsi[soal.jawaban]}</div>
+                    ${soal.pembahasan}
+                `;
+                document.getElementById('q-trik-text').innerHTML = soal.trik_cepat;
+            } else {
+                // Tampilkan Tombol, Sembunyikan Pembahasan & Alert
+                btnPembahasanContainer.classList.remove('hidden');
+                lockedAlert.classList.add('hidden');
+                pembahasanContainer.classList.add('hidden');
+            }
+
+            document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+            
+            if (currentIndex === currentSoalData.length - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-submit').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-submit').classList.add('hidden');
+            }
+
+            updateNavActive();
+            renderMath();
+            
+            const activeBtn = document.getElementById(`nav-btn-${currentIndex}`);
+            if (activeBtn) {
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function pilihJawaban(idx) {
+            // Cek sekali lagi mencegah eksploit jika UI telat update
+            if (lockedAnswers[currentIndex]) return; 
+            
+            userAnswers[currentIndex] = idx;
+            tampilkanSoal();
+        }
+
+        // FUNGSI BARU: Buka Pembahasan & Kunci Soal
+        function bukaPembahasan() {
+            if(confirm("Membuka pembahasan sekarang akan MENGUNCI opsi jawaban Anda pada soal ini secara permanen hingga akhir sesi evaluasi.\n\nApakah Anda ingin melanjutkan?")) {
+                lockedAnswers[currentIndex] = true;
+                tampilkanSoal(); // Segarkan UI untuk mengunci dan menampilkan panel
+            }
+        }
+
+        function selesaiKuis() {
+            if(confirm("Yakin ingin menyelesaikan latihan ini? Semua progres akan dievaluasi.")) {
+                tampilkanEvaluasi();
+            }
+        }
+
+        function tampilkanEvaluasi() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('eval-screen').classList.remove('hidden');
+            window.scrollTo(0, 0);
+            
+            let benar = 0; let salah = 0; let kosong = 0;
+            const evalList = document.getElementById('eval-list');
+            evalList.innerHTML = '';
+            const abjad = ['A', 'B', 'C', 'D', 'E'];
+
+            currentSoalData.forEach((soal, i) => {
+                const ans = userAnswers[i];
+                let statusBadge = "";
+                let borderColor = "";
+                
+                if (ans === null) {
+                    kosong++;
+                    borderColor = "border-gray-400";
+                    statusBadge = "<span class='bg-gray-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm'>KOSONG</span>";
+                } else if (ans === soal.jawaban) {
+                    benar++;
+                    borderColor = "border-green-500 shadow-green-500/20";
+                    statusBadge = "<span class='bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm shadow-green-500/30'>BENAR</span>";
+                } else {
+                    salah++;
+                    borderColor = "border-red-500 shadow-red-500/20";
+                    statusBadge = "<span class='bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm shadow-red-500/30'>SALAH</span>";
+                }
+
+                let evalHTML = `
+                <div class="glass rounded-2xl p-6 shadow-lg border-l-4 ${borderColor}">
+                    <div class="flex justify-between items-center mb-5 border-b border-gray-200 dark:border-gray-700 pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="font-bold text-lg dark:text-white">Soal No. ${i + 1}</div>
+                            ${lockedAnswers[i] ? '<span class="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded shadow-sm border border-gray-300" title="Anda mengintip pembahasan pada soal ini">🔒 Intip</span>' : ''}
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    
+                    <div class="text-gray-800 dark:text-gray-200 mb-5 text-lg">${soal.teks}</div>`;
+                
+                if (soal.gambar) {
+                    evalHTML += `<img src="${soal.gambar}" onerror="this.style.display='none'" class="max-w-full max-h-64 object-contain rounded-xl mb-5 shadow-sm border border-gray-200 dark:border-gray-700">`;
+                }
+
+                evalHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-6">
+                        <div class="p-4 rounded-xl border ${ans === soal.jawaban ? 'bg-green-50/50 border-green-200 dark:bg-green-900/20 dark:border-green-800' : 'bg-red-50/50 border-red-200 dark:bg-red-900/20 dark:border-red-800'}">
+                            <span class="font-bold block mb-1 opacity-70">Jawaban Kamu:</span>
+                            <span class="text-base font-medium ${ans === soal.jawaban ? 'text-green-700 dark:text-green-400' : (ans === null ? 'text-gray-500 dark:text-gray-400' : 'text-red-700 dark:text-red-400')}">
+                                ${ans !== null ? abjad[ans] + '. ' + soal.opsi[ans] : 'Tidak Menjawab'}
+                            </span>
+                        </div>
+                        <div class="p-4 rounded-xl bg-blue-50/50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
+                            <span class="font-bold block mb-1 opacity-70 text-blue-800 dark:text-blue-300">Kunci Jawaban:</span>
+                            <span class="text-base font-medium text-blue-700 dark:text-blue-400">${abjad[soal.jawaban]}. ${soal.opsi[soal.jawaban]}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-gray-700 p-5 mb-4 shadow-sm">
+                        <div class="font-bold text-indigo-700 dark:text-indigo-400 mb-3 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Pembahasan
+                        </div>
+                        <div class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">${soal.pembahasan}</div>
+                    </div>
+
+                    <div class="bg-amber-50/80 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800/50 p-5 shadow-sm">
+                        <div class="font-bold text-amber-700 dark:text-amber-500 mb-2 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            Trik Cepat
+                        </div>
+                        <div class="text-gray-700 dark:text-gray-300 text-base italic">${soal.trik_cepat}</div>
+                    </div>
+                </div>`;
+                
+                evalList.innerHTML += evalHTML;
+            });
+
+            const skorAkhir = Math.round((benar / currentSoalData.length) * 100);
+            document.getElementById('score-display').innerText = skorAkhir;
+            document.getElementById('benar-display').innerText = benar;
+            document.getElementById('salah-display').innerText = salah;
+            document.getElementById('kosong-display').innerText = kosong;
+
+            renderMath();
+        }
+
+        function ulangKuis() {
+            document.getElementById('eval-screen').classList.add('hidden');
+            document.getElementById('selection-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
